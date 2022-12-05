@@ -1,38 +1,46 @@
-import java.util.*; //import
+import java.io.*;
+import java.util.*;
 
-public class p2 {
-    public static int checkr(List<Integer> q1, List<Integer> q2) {
-        int sum1=q1.stream().mapToInt(Integer::intValue).sum();
-        int sum2=q2.stream().mapToInt(Integer::intValue).sum();
-        if((sum1 + sum2) % 2 != 0) return -1;
+public class QueueSum {
 
-        int count = 0;
-        int length = q1.size() * q2.size() * q1.size() * q2.size();
-        while(count < length) {
-            sum1=q1.stream().mapToInt(Integer::intValue).sum();
-            sum2=q2.stream().mapToInt(Integer::intValue).sum();
-            if(sum1 == sum2) return count;
-
-            // head의 값 조회
-            int head_q1 = q1.get(0);
-            int head_q2 = q2.get(0);
-
-            // q1 합이 q2보다 크면, q1에서 하나 빼서 q2로 보냄
-            if(sum1 > sum2) {
-                int tmp = q1.remove(0);
-                q2.add(tmp);
-            } else if(sum1 < sum2) {
-                int tmp = q2.remove(0);
-                q1.add(tmp);
-            }
-            count +=1;
+    public static int sumOfQueue(Queue q) {
+        Iterator iter = q.iterator();
+        int sum = 0;
+        while(iter.hasNext()) {
+            sum += (int)iter.next();
         }
-        return  -1;
+        return sum;
     }
-    public static void main(String[] args) {
-        List<Integer> q1 = new ArrayList<>(Arrays.asList(3,2,7,2));
-        List<Integer> q2 = new ArrayList<>(Arrays.asList(4,6,5,1));
-        System.out.println(checkr(q1, q2));
 
+
+    public static int solution(Queue q1, Queue q2) {
+        // 두 큐의 합 구하기
+        int sum1 = sumOfQueue(q1);
+        int sum2 = sumOfQueue(q2);
+
+        int totalSum = sum1 + sum2;
+
+        // 한 쪽 큐가 작으면 다른 큐에서 삭제한 요소를 넣어주기
+        int count =0;
+        int limit = q1.size() + q2.size();
+        while(count < limit) {
+            if (sumOfQueue(q1) == sumOfQueue(q2)) {
+                return count;
+            } else if (sumOfQueue(q1) < sumOfQueue(q2)) { // q1의 합이 q2보다 작다면 q2에서 빼온다
+                int el = (int)q2.remove();
+                q1.add(el);
+            } else {
+                int el = (int)q1.remove();
+                q2.add(el);
+            }
+            count += 1;
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Queue<Integer> q1 = new LinkedList<Integer>(Arrays.asList(3,2,7,2));
+        Queue<Integer> q2 = new LinkedList<Integer>(Arrays.asList(4,6,5,1));
+        System.out.println(solution(q1, q2));
     }
 }
